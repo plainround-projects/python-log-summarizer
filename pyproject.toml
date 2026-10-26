@@ -1,0 +1,92 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "logsum"
+version = "0.1.0"
+description = "A streaming access-log summarizer: requests per status, the slowest paths by p95 latency, unparseable lines."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Sumit Srivastava" }]
+dependencies = []
+
+[project.scripts]
+logsum = "logsum.interfaces.cli:entrypoint"
+logsum-make-log = "logsum.interfaces.make_log_cli:entrypoint"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "import-linter>=2.0",
+    "pip-audit>=2.7",
+    "jsonschema>=4.23",
+    "types-jsonschema>=4.23",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/logsum"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "N", "C4", "RUF", "PT", "D100", "D101", "D102", "D103", "D104"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests", "scripts/compare_memory.py"]
+
+# Test functions are named for the behavior they check; annotating every one adds noise, not safety.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "integration: real files, real gzip and the installed command",
+    "e2e: the lesson's scenario on the 500,000-line sample log",
+]
+
+[tool.coverage.run]
+source = ["logsum"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+
+[tool.importlinter]
+root_package = "logsum"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers: interfaces -> infrastructure -> application -> domain, never upward"
+type = "layers"
+layers = [
+    "logsum.interfaces",
+    "logsum.infrastructure",
+    "logsum.application",
+    "logsum.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain and application do no I/O and know nothing of the command line"
+type = "forbidden"
+source_modules = ["logsum.domain", "logsum.application"]
+forbidden_modules = ["gzip", "argparse", "tracemalloc", "pathlib", "os", "sys"]
