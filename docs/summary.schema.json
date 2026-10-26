@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/logsum/summary.schema.json",
+  "title": "logsum summary",
+  "description": "The document `logsum --json` prints.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["total_requests", "bad_lines", "statuses", "slowest_paths"],
+  "properties": {
+    "total_requests": { "type": "integer", "minimum": 0, "description": "Lines that parsed as requests." },
+    "bad_lines": { "type": "integer", "minimum": 0, "description": "Lines that could not be parsed: counted, never fatal." },
+    "statuses": {
+      "type": "object",
+      "description": "Requests per HTTP status code; the keys are the codes as strings.",
+      "propertyNames": { "pattern": "^[1-5][0-9]{2}$" },
+      "additionalProperties": { "type": "integer", "minimum": 1 }
+    },
+    "slowest_paths": {
+      "type": "array",
+      "description": "Paths by 95th-percentile latency, slowest first.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "p95_ms", "requests"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^/" },
+          "p95_ms": { "type": "number", "minimum": 0 },
+          "requests": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "description": "Present with --stats.",
+      "additionalProperties": false,
+      "required": ["elapsed_seconds", "peak_memory_bytes"],
+      "properties": {
+        "elapsed_seconds": { "type": "number", "minimum": 0 },
+        "peak_memory_bytes": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    }
+  }
+}
