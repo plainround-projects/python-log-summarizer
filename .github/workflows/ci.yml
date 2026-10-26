@@ -1,0 +1,23 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    name: Format, lint, types, import rules, tests with coverage, dependency audit, wheel install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+      - run: make up
+      - run: make lint
+      - run: make test
+      - run: make audit
+      - run: make install-check
