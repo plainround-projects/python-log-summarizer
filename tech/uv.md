@@ -108,6 +108,17 @@ Found by reading the Makefile, the scripts, the Dockerfile, the CI file and the 
 - `uv pip install --quiet --python PYTHON FILE`: install a package file into the environment of the given interpreter. `--python` (short `-p`) names the interpreter whose environment is changed; this is the pip-compatible interface of uv, used to prove the wheel installs on its own.
 - `uv pip list --python PYTHON`: list what is installed in that interpreter's environment.
 
+### The `.python-version` file
+
+The file `.python-version` holds one line:
+
+```text
+3.14
+```
+(`.python-version`, line 1)
+
+It names the Python version this project wants. When uv creates `.venv` it looks for an interpreter that matches `3.14` (a request for the minor version 3.14: any 3.14.x), and it tells other tools, such as editors and pyenv, which Python to use here. `requires-python` in `pyproject.toml` is the wider promise (the versions the code runs on); `.python-version` is the one version used day to day.
+
 ## Try it yourself
 
 Run these from the repository folder.

@@ -67,6 +67,19 @@ include_external_packages = true
 
 ```toml
 [[tool.importlinter.contracts]]
+name = "Layers: interfaces -> infrastructure -> application -> domain, never upward"
+type = "layers"
+layers = [
+    "logsum.interfaces",
+    "logsum.infrastructure",
+    "logsum.application",
+    "logsum.domain",
+]
+```
+(`pyproject.toml`, lines 78 to 86)
+
+```toml
+[[tool.importlinter.contracts]]
 name = "Domain and application do no I/O and know nothing of the command line"
 type = "forbidden"
 source_modules = ["logsum.domain", "logsum.application"]
