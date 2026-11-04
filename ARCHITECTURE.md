@@ -30,8 +30,10 @@ Drawn versions of this figure and of the walk-through: [the architecture](docs/d
 flowchart LR
     log[("Access log<br/>any size on disk")] -->|"lines, one at a time"| reader["Line generator<br/>stream_requests"]
     reader -->|line| parse["Parser<br/>parse() returns Request or None"]
-    parse -->|"unreadable"| bad["Bad-line counter<br/>counted, never fatal"]
-    parse -->|Request| tally[("Tally<br/>Counter + one distribution per path")]
+    parse -->|"Request or None"| reader
+    reader -->|"None: count it"| bad["Bad-line counter<br/>counted, never fatal"]
+    reader -->|"Request, yielded to SummarizeLog (tally.add)"| tally[("Tally<br/>Counter + one distribution per path")]
+    bad -->|"count, handed over at the end"| tally
     tally -->|summary| report["Summary report<br/>text or JSON"]
     reader -. "costly path: readlines() holds every line" .-> mem(["memory grows with the file"])
 ```
