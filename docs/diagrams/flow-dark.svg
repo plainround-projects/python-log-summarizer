@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="880" viewBox="0 0 1200 880" role="img" aria-labelledby="t d">
+<title id="t">One run of logsum in python-log-summarizer</title>
+<desc id="d">main builds the run from settings and flags. SummarizeLog starts the meter and opens the file, then pulls one line at a time through the Line generator, which calls the Parser. A good line is yielded as a Request and tallied by status and path. A bad line is counted by the BadLineCounter and the run goes on. At the end of the file the clock and meter stop, the Tally takes the 95th percentile of each path and the top N are rendered and printed with exit code 0.</desc>
+<style>
+:root{--paper:#0d1117;--ink:#f5f4f8;--mute:#9a96ab;--accent:#6ec8ff;--good:#7ce0a1;--warn:#ffd166}
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;fill:var(--ink)}
+.title{font-family:Georgia,'Iowan Old Style','Times New Roman',serif;font-size:36px}
+.caption{font-size:16px;fill:var(--mute)}
+.name{font-size:20px;font-weight:600}
+.lane{font-size:17px;font-weight:600}
+.sub{font-size:15px;fill:var(--mute)}
+.label{font-size:15px}
+.tag{font-size:15px;fill:var(--mute)}
+.num{font-size:15px;font-weight:700;fill:var(--paper)}
+.legend{font-size:14px;fill:var(--mute)}
+.t-accent{fill:var(--accent)}
+.t-good{fill:var(--good)}
+.t-warn{fill:var(--warn)}
+.t-ink{fill:var(--ink)}
+.b{font-weight:600}
+.paper{fill:var(--paper);stroke:var(--mute);stroke-opacity:.3}
+.grid{fill:url(#grid)}
+.boundary{fill:var(--mute);fill-opacity:.035;stroke:var(--mute);stroke-opacity:.7;stroke-dasharray:6 5}
+.svc{fill:var(--accent);fill-opacity:.08;stroke:var(--accent);stroke-width:1.25}
+.store{fill:var(--mute);fill-opacity:.1;stroke:var(--mute);stroke-width:1.25}
+.rim{fill:none;stroke:var(--mute);stroke-width:1.25}
+.actor{fill:none;stroke:var(--mute);stroke-width:1.25}
+.slot{fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1}
+.note{fill:var(--warn);fill-opacity:.09;stroke:var(--warn);stroke-width:1}
+.win{fill:var(--good);fill-opacity:.09;stroke:var(--good);stroke-width:1}
+.hair{fill:none;stroke:var(--mute);stroke-opacity:.4;stroke-width:1}
+.zone{fill:var(--accent);fill-opacity:.045;stroke:var(--accent);stroke-width:1.25;stroke-dasharray:6 5}
+.stop{fill:none;stroke:var(--warn);stroke-width:4;stroke-linecap:round}
+.mask{fill:var(--paper)}
+.sync,.async,.read,.fail,.ok{fill:none}
+.sync{stroke:var(--accent);stroke-width:1.75;marker-end:url(#a-sync)}
+.async{stroke:var(--accent);stroke-width:1.75;stroke-dasharray:8 6;marker-end:url(#a-async)}
+.read{stroke:var(--mute);stroke-width:1.75;stroke-linecap:round;stroke-dasharray:1 6;marker-end:url(#a-read)}
+.fail{stroke:var(--warn);stroke-width:2;marker-end:url(#a-fail)}
+.ok{stroke:var(--good);stroke-width:1.75;marker-end:url(#a-ok)}
+.dot{fill:var(--accent)}
+.dot-w{fill:var(--warn)}
+.dot-g{fill:var(--good)}
+.head-sync,.head-async{stroke:var(--accent)}
+.head-sync{fill:var(--accent)}
+.head-async,.head-read{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.head-read{stroke:var(--mute)}
+.head-fail{fill:var(--warn)}
+.head-ok{fill:var(--good)}
+.gridline{fill:none;stroke:var(--mute);stroke-opacity:.09}
+</style>
+<defs>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path class="gridline" d="M40 0H0V40"/></pattern>
+<marker id="a-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-sync" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-async" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-read" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-read" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-fail" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-ok" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="paper" x="0.5" y="0.5" width="1199" height="879" rx="16"/>
+<rect class="grid" x="1" y="1" width="1198" height="878" rx="16"/>
+<text class="title" x="48" y="68">One run of logsum data/sample.log --stats</text>
+<text class="caption" x="48" y="100">Rows 3 to 6 repeat for every line. The amber row is the bad line that is counted instead of stopping the run.</text>
+<rect class="svc" x="420" y="128" width="100" height="48" rx="10"/>
+<text class="lane" x="470" y="158" text-anchor="middle">main</text>
+<rect class="svc" x="565" y="128" width="150" height="48" rx="10"/>
+<text class="lane" x="640" y="158" text-anchor="middle">SummarizeLog</text>
+<rect class="svc" x="745" y="128" width="110" height="48" rx="10"/>
+<text class="lane" x="800" y="148" text-anchor="middle">Line</text>
+<text class="lane" x="800" y="168" text-anchor="middle">generator</text>
+<rect class="svc" x="880" y="128" width="100" height="48" rx="10"/>
+<text class="lane" x="930" y="158" text-anchor="middle">Parser</text>
+<rect class="svc" x="1010" y="128" width="100" height="48" rx="10"/>
+<text class="lane" x="1060" y="158" text-anchor="middle">Tally</text>
+<path class="hair" d="M470 176V816M640 176V816M800 176V560M930 176V560M1060 176V744"/>
+<path class="hair" d="M66 216V792"/>
+<circle class="dot" cx="66" cy="216" r="15"/>
+<text class="num" x="66" y="221" text-anchor="middle">1</text>
+<text class="label b t-ink" x="96" y="212">main builds the run</text>
+<text class="sub" x="96" y="232">settings, flags, logging, meter</text>
+<rect class="slot" x="464" y="198" width="12" height="36" rx="4"/>
+<text class="label t-accent" x="486" y="221">Settings</text>
+<circle class="dot" cx="66" cy="280" r="15"/>
+<text class="num" x="66" y="285" text-anchor="middle">2</text>
+<text class="label b t-ink" x="96" y="276">run starts the meter and clock</text>
+<text class="sub" x="96" y="296">opens the file through the port</text>
+<path class="sync" d="M470 280H640"/>
+<text class="label t-accent" x="482" y="270">run(path)</text>
+<circle class="dot" cx="66" cy="344" r="15"/>
+<text class="num" x="66" y="349" text-anchor="middle">3</text>
+<text class="label b t-ink" x="96" y="340">Pull one line</text>
+<text class="sub" x="96" y="360">the rest stays on disk</text>
+<path class="sync" d="M640 344H800"/>
+<text class="label t-accent" x="652" y="334">next line</text>
+<circle class="dot" cx="66" cy="408" r="15"/>
+<text class="num" x="66" y="413" text-anchor="middle">4</text>
+<text class="label b t-ink" x="96" y="404">parse() checks the line</text>
+<text class="sub" x="96" y="424">five fields, status, whole ms</text>
+<path class="sync" d="M800 408H930"/>
+<text class="label t-accent" x="812" y="398">parse(line)</text>
+<circle class="dot" cx="66" cy="472" r="15"/>
+<text class="num" x="66" y="477" text-anchor="middle">5a</text>
+<text class="label b t-ink" x="96" y="468">A good line is yielded</text>
+<text class="sub" x="96" y="488">an immutable Request</text>
+<path class="ok" d="M800 472H640"/>
+<text class="label t-good" x="652" y="462">Request</text>
+<circle class="dot-w" cx="66" cy="536" r="15"/>
+<text class="num" x="66" y="541" text-anchor="middle">5b</text>
+<text class="label b t-warn" x="96" y="532">A bad line is counted</text>
+<text class="sub" x="96" y="552">BadLineCounter, then the next line</text>
+<path class="fail" d="M930 536H800"/>
+<text class="label t-warn" x="812" y="526">None</text>
+<circle class="dot" cx="66" cy="600" r="15"/>
+<text class="num" x="66" y="605" text-anchor="middle">6</text>
+<text class="label b t-ink" x="96" y="596">Tally the request</text>
+<text class="sub" x="96" y="616">status Counter, path distribution</text>
+<path class="sync" d="M640 600H1060"/>
+<text class="label t-accent" x="942" y="590">tally.add</text>
+<circle class="dot" cx="66" cy="664" r="15"/>
+<text class="num" x="66" y="669" text-anchor="middle">7</text>
+<text class="label b t-ink" x="96" y="660">End of file: stop the clock</text>
+<text class="sub" x="96" y="680">bad count goes to the tally</text>
+<rect class="slot" x="634" y="646" width="12" height="36" rx="4"/>
+<text class="label t-accent" x="656" y="669">elapsed</text>
+<circle class="dot" cx="66" cy="728" r="15"/>
+<text class="num" x="66" y="733" text-anchor="middle">8</text>
+<text class="label b t-ink" x="96" y="724">Summarize</text>
+<text class="sub" x="96" y="744">p95 per path, top N, sorted</text>
+<path class="sync" d="M640 728H1060"/>
+<text class="label t-accent" x="942" y="718">summary</text>
+<circle class="dot-g" cx="66" cy="792" r="15"/>
+<text class="num" x="66" y="797" text-anchor="middle">9</text>
+<text class="label b t-ink" x="96" y="788">Render and print</text>
+<text class="sub" x="96" y="808">text or JSON, exit code 0</text>
+<path class="ok" d="M640 792H470"/>
+<text class="label t-good" x="482" y="782">report</text>
+<path class="ok" d="M640 792H700"/>
+<rect class="win" x="700" y="772" width="320" height="40" rx="10"/>
+<text class="label b t-good" x="716" y="797">statuses, top 10, bad lines: 300</text>
+<path class="sync" d="M48 836H112"/><text class="legend" x="124" y="841">sync call</text>
+<path class="fail" d="M696 836H760"/><text class="legend" x="772" y="841">failure path</text>
+<path class="ok" d="M928 836H992"/><text class="legend" x="1004" y="841">result</text>
+</svg>

@@ -9,6 +9,24 @@
 | **Level** | Beginner |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md), decisions: [docs/adr](docs/adr) |
 
+## Architecture
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/architecture-dark.svg">
+  <img alt="The Access log is read one line at a time by the Line generator, which calls the Parser. A bad line goes to the Bad-line counter, a good Request goes to the Tally, and the Tally produces the Summary report as text or JSON." src="docs/diagrams/architecture.svg">
+</picture>
+
+Memory depends on how many distinct paths there are, not on the file, because only one line and the running Tally are ever held; the amber note is the readlines() alternative that would grow with the file.
+
+## How one run flows
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/diagrams/flow-dark.svg">
+  <img alt="logsum pulls one line at a time, parses it, yields a Request or counts a bad line, tallies by status and path, then takes the 95th percentile per path and prints the top ten." src="docs/diagrams/flow.svg">
+</picture>
+
+The amber row is the bad line that is counted and skipped instead of stopping the run; the green box is what the summary prints.
+
 ## Prerequisites
 
 | Tool | Version | Used for |

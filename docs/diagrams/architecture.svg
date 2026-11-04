@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="736" viewBox="0 0 1200 736" role="img" aria-labelledby="t d">
+<title id="t">Architecture of python-log-summarizer</title>
+<desc id="d">The Access log, of any size, is read one line at a time by the Line generator stream_requests inside the logsum process. The generator calls the Parser, which returns a Request or None. A None is counted by the Bad-line counter and never stops the run. Each Request goes into the Tally, a Counter of statuses and one latency distribution per path, and the Tally produces the Summary report as text or JSON. An amber note marks the costly alternative, readlines, whose memory grows with the file.</desc>
+<style>
+:root{--paper:#ffffff;--ink:#10243d;--mute:#52677f;--accent:#0a6aa8;--good:#19743f;--warn:#8a5a00}
+text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;fill:var(--ink)}
+.title{font-family:Georgia,'Iowan Old Style','Times New Roman',serif;font-size:36px}
+.caption{font-size:16px;fill:var(--mute)}
+.name{font-size:20px;font-weight:600}
+.lane{font-size:17px;font-weight:600}
+.sub{font-size:15px;fill:var(--mute)}
+.label{font-size:15px}
+.tag{font-size:15px;fill:var(--mute)}
+.num{font-size:15px;font-weight:700;fill:var(--paper)}
+.legend{font-size:14px;fill:var(--mute)}
+.t-accent{fill:var(--accent)}
+.t-good{fill:var(--good)}
+.t-warn{fill:var(--warn)}
+.t-ink{fill:var(--ink)}
+.b{font-weight:600}
+.paper{fill:var(--paper);stroke:var(--mute);stroke-opacity:.3}
+.grid{fill:url(#grid)}
+.boundary{fill:var(--mute);fill-opacity:.035;stroke:var(--mute);stroke-opacity:.7;stroke-dasharray:6 5}
+.svc{fill:var(--accent);fill-opacity:.08;stroke:var(--accent);stroke-width:1.25}
+.store{fill:var(--mute);fill-opacity:.1;stroke:var(--mute);stroke-width:1.25}
+.rim{fill:none;stroke:var(--mute);stroke-width:1.25}
+.actor{fill:none;stroke:var(--mute);stroke-width:1.25}
+.slot{fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1}
+.note{fill:var(--warn);fill-opacity:.09;stroke:var(--warn);stroke-width:1}
+.win{fill:var(--good);fill-opacity:.09;stroke:var(--good);stroke-width:1}
+.hair{fill:none;stroke:var(--mute);stroke-opacity:.4;stroke-width:1}
+.zone{fill:var(--accent);fill-opacity:.045;stroke:var(--accent);stroke-width:1.25;stroke-dasharray:6 5}
+.stop{fill:none;stroke:var(--warn);stroke-width:4;stroke-linecap:round}
+.mask{fill:var(--paper)}
+.sync,.async,.read,.fail,.ok{fill:none}
+.sync{stroke:var(--accent);stroke-width:1.75;marker-end:url(#a-sync)}
+.async{stroke:var(--accent);stroke-width:1.75;stroke-dasharray:8 6;marker-end:url(#a-async)}
+.read{stroke:var(--mute);stroke-width:1.75;stroke-linecap:round;stroke-dasharray:1 6;marker-end:url(#a-read)}
+.fail{stroke:var(--warn);stroke-width:2;marker-end:url(#a-fail)}
+.ok{stroke:var(--good);stroke-width:1.75;marker-end:url(#a-ok)}
+.dot{fill:var(--accent)}
+.dot-w{fill:var(--warn)}
+.dot-g{fill:var(--good)}
+.head-sync,.head-async{stroke:var(--accent)}
+.head-sync{fill:var(--accent)}
+.head-async,.head-read{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.head-read{stroke:var(--mute)}
+.head-fail{fill:var(--warn)}
+.head-ok{fill:var(--good)}
+.gridline{fill:none;stroke:var(--mute);stroke-opacity:.09}
+</style>
+<defs>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path class="gridline" d="M40 0H0V40"/></pattern>
+<marker id="a-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-sync" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-async" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-read" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-read" d="M1 1L9 5L1 9"/></marker>
+<marker id="a-fail" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-fail" d="M0 0L10 5L0 10z"/></marker>
+<marker id="a-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path class="head-ok" d="M0 0L10 5L0 10z"/></marker>
+</defs>
+<rect class="paper" x="0.5" y="0.5" width="1199" height="735" rx="16"/>
+<rect class="grid" x="1" y="1" width="1198" height="734" rx="16"/>
+<text class="title" x="48" y="68">logsum reads one line at a time and keeps a tally</text>
+<text class="caption" x="48" y="100">Memory depends on the number of paths, not on the file. Amber: the readlines() path the lesson warns against.</text>
+<path class="store" d="M48 182a100 12 0 0 1 200 0v102a100 12 0 0 1 -200 0z"/>
+<path class="rim" d="M48 182a100 12 0 0 0 200 0"/>
+<text class="name" x="148" y="219" text-anchor="middle">Access log</text>
+<text class="sub" x="148" y="243" text-anchor="middle">any size on disk</text>
+<text class="sub" x="148" y="267" text-anchor="middle">plain or .gz</text>
+<rect class="boundary" x="280" y="132" width="872" height="528" rx="14"/>
+<text class="tag" x="296" y="160">logsum process: SummarizeLog, one pass</text>
+<rect class="svc" x="400" y="184" width="216" height="84" rx="12"/>
+<text class="name" x="416" y="216">Line generator</text>
+<text class="sub" x="416" y="240">stream_requests</text>
+<text class="sub" x="416" y="262">one line in memory</text>
+<rect class="svc" x="760" y="184" width="240" height="84" rx="12"/>
+<text class="name" x="776" y="216">Parser</text>
+<text class="sub" x="776" y="240">Request or None</text>
+<text class="sub" x="776" y="262">five fields, status, ms</text>
+<rect class="svc" x="400" y="340" width="240" height="84" rx="12"/>
+<text class="name" x="416" y="372">Bad-line counter</text>
+<text class="sub" x="416" y="396">counted, never fatal</text>
+<text class="sub" x="416" y="418">BadLineCounter</text>
+<path class="store" d="M720 352a140 12 0 0 1 280 0v102a140 12 0 0 1 -280 0z"/>
+<path class="rim" d="M720 352a140 12 0 0 0 280 0"/>
+<text class="name" x="860" y="389" text-anchor="middle">Tally</text>
+<text class="sub" x="860" y="413" text-anchor="middle">Counter of statuses</text>
+<text class="sub" x="860" y="437" text-anchor="middle">one distribution per path</text>
+<rect class="svc" x="720" y="540" width="280" height="84" rx="12"/>
+<text class="name" x="736" y="572">Summary report</text>
+<text class="sub" x="736" y="596">text or JSON</text>
+<text class="sub" x="736" y="618">render_text, render_json</text>
+<rect class="note" x="312" y="490" width="360" height="100" rx="10"/>
+<text class="label b t-warn" x="328" y="520">readlines(): the costly path</text>
+<text class="sub" x="328" y="546">peak 44.4 MB, against 0.1 MB</text>
+<text class="sub" x="328" y="568">memory grows with the file</text>
+<path class="read" d="M248 226H400"/>
+<text class="label t-ink" x="292" y="216">lines</text>
+<path class="sync" d="M616 226H760"/>
+<text class="label t-accent" x="628" y="216">parse(line)</text>
+<path class="async" d="M440 268V340"/>
+<text class="label t-accent" x="452" y="312">None: count</text>
+<path class="async" d="M590 268V292Q590 304 602 304H778Q790 304 790 316V340"/>
+<text class="label t-accent" x="614" y="294">yield Request</text>
+<path class="sync" d="M860 466V540"/>
+<text class="label t-accent" x="872" y="506">summary</text>
+<path class="sync" d="M48 692H112"/><text class="legend" x="124" y="697">sync call</text>
+<path class="async" d="M264 692H328"/><text class="legend" x="340" y="697">async message</text>
+<path class="read" d="M520 692H584"/><text class="legend" x="596" y="697">read</text>
+</svg>

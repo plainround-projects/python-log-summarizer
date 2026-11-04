@@ -24,6 +24,8 @@ The core is a few pure functions and value objects (`parse`, `p95`, `LogTally`);
 
 ## Data flow
 
+Drawn versions of this figure and of the walk-through: [the architecture](docs/diagrams/architecture.svg) and [one run](docs/diagrams/flow.svg).
+
 ```mermaid
 flowchart LR
     log[("Access log<br/>any size on disk")] -->|"lines, one at a time"| reader["Line generator<br/>stream_requests"]
